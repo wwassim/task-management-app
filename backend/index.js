@@ -11,8 +11,10 @@ dotenv.config();
 // Initialize Express app
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+// Connect to MongoDB only if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  connectDB();
+}
 
 // Middleware
 app.use(cors({ origin: "*" }));
@@ -39,9 +41,14 @@ app.get('', (req, res) => {
     res.send('API is running... <br><a href="/api-docs">View API Documentation</a>');
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+// Export app for testing
+module.exports = app;
+
+// Start server only if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
     console.log(`API Documentation available at http://localhost:${PORT}/api-docs`);
-});
+  });
+}
